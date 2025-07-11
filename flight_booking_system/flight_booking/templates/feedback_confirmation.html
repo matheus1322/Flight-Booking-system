@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  <title>Feedback Confirmation</title>
+{% endblock %}
+
+{% block content %}
+  <h1>Feedback Submitted Successfully</h1>
+  <p>Thank you for submitting your feedback.</p>
+  <p>Feedback details:</p>
+  <ul>
+    <li>Username: {{ feedback.username }}</li>
+    <li>Feedback: {{ feedback.message }}</li>
+  </ul>
+{% endblock %}

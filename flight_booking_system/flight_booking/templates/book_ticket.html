@@ -1,0 +1,191 @@
+{% load static %}
+<html>
+<head>
+  <title>Book Ticket</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      background-color: #333;
+      padding: 10px;
+    }
+
+    nav ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+    }
+
+    nav ul li {
+      margin-right: 10px;
+    }
+
+    nav ul li a {
+      color: #fff;
+      text-decoration: none;
+      padding: 5px 10px;
+    }
+
+    main {
+      margin: 20px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    form {
+      margin-bottom: 20px;
+    }
+
+    form label {
+      display: inline-block;
+      width: 120px;
+    }
+
+    form input[type="text"],
+    form input[type="number"] {
+      width: 200px;
+      padding: 5px;
+    }
+
+    form select {
+      width: 200px;
+      padding: 5px;
+    }
+
+    form .ticket-type {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    form .ticket-type label {
+      margin-right: 10px;
+    }
+
+    form .ticket-type input[type="number"] {
+      width: 80px;
+    }
+
+    form button {
+      padding: 5px 10px;
+    }
+
+    .success-message {
+      color: green;
+      margin-bottom: 10px;
+    }
+
+    .error-message {
+      color: red;
+      margin-bottom: 10px;
+    }
+
+    footer {
+      background-color: #333;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+  </style>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      // Calculate total price when form is valid and on input change
+      var form = $('form');
+      var totalPriceElement = $('#total_price');
+
+      function calculateTotalPrice() {
+        if (form[0].checkValidity()) {
+          var economyTickets = $('#economy_tickets').val() || 0;
+          var firstClassTickets = $('#first_class_tickets').val() || 0;
+          var premiumEconomyTickets = $('#premium_economy_tickets').val() || 0;
+
+          var pricePerEconomyTicket = 100;
+          var pricePerFirstClassTicket = 200;
+          var pricePerPremiumEconomyTicket = 300;
+
+          var totalPrice = (economyTickets * pricePerEconomyTicket) + (firstClassTickets * pricePerFirstClassTicket) + (premiumEconomyTickets * pricePerPremiumEconomyTicket);
+
+          var totalNumTickets = parseInt(economyTickets) + parseInt(firstClassTickets) + parseInt(premiumEconomyTickets);
+          if (totalNumTickets > 5) {
+            totalPrice *= 0.8;
+          }
+
+          totalPriceElement.html("$" + totalPrice.toFixed(2));
+        }
+      }
+
+      form.on('input', calculateTotalPrice);
+      form.on('submit', calculateTotalPrice);
+    });
+  </script>
+</head>
+<body>
+  <header>
+    <nav>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/book-ticket/">Book Ticket</a></li>
+        <li><a href="/search_tickets/">Search Ticket</a></li>
+        <li><a href="/feedback.list/">Submit Feedback</a></li>
+        <li><a href="/cancel-ticket/">Cancel Ticket</a></li>
+        <li><a href="http://localhost:8000/admin/login/?next=/admin/">Admin Area</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <h1>Book Ticket</h1>
+
+    {% for message in messages %}
+    <p class="{{ message.tags }}">{{ message }}</p>
+    {% endfor %}
+
+    <form method="POST" action="{% url 'book_ticket' %}">
+      {% csrf_token %}
+      <fieldset>
+        <legend>Book your ticket</legend>
+        <div>
+          <label for="username">Username:</label>
+          <input type="text" id="username" name="username">
+        </div>
+        
+        <div class="ticket-type">
+          <label for="economy_tickets">Economy Tickets:</label>
+          <input type="number" id="economy_tickets" name="number_of_tickets_economy" min="0"><br>
+        </div>
+
+        <div class="ticket-type">
+          <label for="first_class_tickets">First Class Tickets:</label>
+          <input type="number" id="first_class_tickets" name="number_of_tickets_first_class" min="0"><br>
+        </div>
+
+        <div class="ticket-type">
+          <label for="premium_economy_tickets">Premium Economy Tickets:</label>
+          <input type="number" id="premium_economy_tickets" name="number_of_tickets_premium_economy" min="0"><br>
+        </div>
+        
+      </fieldset>
+      <button type="submit">Book</button>
+    </form>
+
+    <h2>Tickets Available:</h2>
+    <ul>
+      {% for ticket in tickets %}
+      <li>{{ ticket.ticket_type }} Tickets: {{ ticket.availability }}</li>
+      {% endfor %}
+    </ul>
+
+    <h2>Total Price:</h2>
+    <p id="total_price">$0.00</p>
+  </main>
+  <footer>
+    <p>&copy; 2023 Matheus Flight Project</p>
+  </footer>
+   
+</body>
+</html>

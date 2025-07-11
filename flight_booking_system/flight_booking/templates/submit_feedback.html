@@ -1,0 +1,186 @@
+<html>
+    <head>
+      <title>Submit Feedback</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+        }
+
+        header {
+          background-color: #333;
+          padding: 10px;
+        }
+
+        nav ul {
+          list-style-type: none;
+          margin: 0;
+          padding: 0;
+          display: flex;
+        }
+
+        nav ul li {
+          margin-right: 10px;
+        }
+
+        nav ul li a {
+          color: #fff;
+          text-decoration: none;
+          padding: 5px 10px;
+        }
+
+        main {
+          margin: 20px;
+        }
+
+        h1 {
+          margin-bottom: 20px;
+        }
+
+        form {
+          margin-bottom: 20px;
+        }
+
+        form label {
+          display: inline-block;
+          width: 120px;
+        }
+
+        form input[type="text"],
+        form input[type="number"] {
+          width: 200px;
+          padding: 5px;
+        }
+
+        form select {
+          width: 200px;
+          padding: 5px;
+        }
+
+        form button {
+          padding: 5px 10px;
+        }
+
+        .success-message {
+          color: green;
+          margin-bottom: 10px;
+        }
+
+        .error-message {
+          color: red;
+          margin-bottom: 10px;
+        }
+         table {
+          border-collapse: collapse;
+          width: 100%;
+        }
+
+        th, td {
+          padding: 8px;
+          text-align: left;
+          border-bottom: 1px solid #ddd;
+        }
+
+        th {
+          background-color: #f2f2f2;
+          font-weight: bold;
+        }
+
+        /* Styles for admin actions */
+        .admin-actions {
+          margin-top: 20px;
+        }
+
+        .admin-actions button {
+          padding: 5px 10px;
+        }
+        footer {
+          background-color: #333;
+          color: #fff;
+          padding: 20px;
+          text-align: center;
+        }
+      </style>
+    </head>
+    <body>
+      <header>
+        <nav>
+          <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/book-ticket/">Book Ticket</a></li>
+        <li><a href="/search_tickets/">Search Ticket</a></li>
+        <li><a href="/feedback-list/">Submit Feedback</a></li>
+        <li><a href="/cancel-ticket/">Cancel Ticket</a></li>
+        <li><a href="http://localhost:8000/admin/login/?next=/admin/">Admin Area</a></li>
+        
+          </ul>
+        </nav>
+      </header>
+  <main>
+    <h1>Submit Feedback</h1>
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    <form action="{% url 'submit_feedback' %}" method="post">
+          {% csrf_token %}
+    
+    <div class="form-group">
+    <label for="username">Userame</label>
+    <input type="text" name="username" id="username" class="form-control">
+    </div>
+    
+    <div class="form-group">
+    <label for="feedback">Feedback</label>
+    <textarea name="feedback" id="feedback" class="form-control"></textarea>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Submit Feedback</button>
+    </form>
+        <table>
+          <thead>
+            <tr>
+              <th>username</th>
+              <th>Feedback</th>
+              <th>Reply</th>
+              {% if user.is_superuser %}
+                <th>Actions</th>
+              {% endif %}
+            </tr>
+          </thead>
+          <tbody>
+        {% for feedback in feedbacks %}
+          <tr>
+            <td>{{ feedback.username }}</td>
+            <td>{{ feedback.feedback }}</td>
+            <td>
+              {% if feedback.reply %}
+                {{ feedback.reply }}
+              {% else %}
+                No reply yet.
+              {% endif %}
+            </td>
+            {% if user.is_superuser %}
+            <td>
+              <a href="{% url 'reply_feedback' feedback.id %}">Reply</a>
+              <a href="{% url 'edit_feedback' feedback.id %}">Edit</a>
+              <a href="{% url 'delete_feedback' feedback.id %}">Delete</a>
+            </td>
+          {% endif %}
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="{% if user.is_superuser %}4{% else %}3{% endif %}">No feedbacks found.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </main>
+      
+      <footer>
+        <p>&copy; 2023 Matheus Flight Project</p>
+      </footer>
+    </body>
+</html>

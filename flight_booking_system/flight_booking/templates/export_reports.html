@@ -1,0 +1,23 @@
+<!-- export_reports.html -->
+{% extends 'base.html' %}
+
+{% block title %}
+  <title>Export Reports</title>
+{% endblock %}
+
+{% block content %}
+<h2>Reports</h2>
+{% if user.is_authenticated %}
+<form method="post" action="{% url 'export_reports' %}">
+    {% csrf_token %}
+    <label for="format">Export Format:</label>
+    <select name="format" id="format">
+      <option value="csv">CSV</option>
+      <option value="text">Text</option>
+    </select>
+    <button type="submit">Export</button>
+  </form>
+{% else %}
+  <p>Please <a href="{% url 'admin:login' %}">log in</a> as an admin to export reports.</p>
+{% endif %}
+{% endblock %}

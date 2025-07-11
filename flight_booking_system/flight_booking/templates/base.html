@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Flight Booking System</title>
+  <style>
+     body {
+       font-family: Arial, sans-serif;
+       margin: 0;
+       padding: 0;
+     }
+
+     header {
+       background-color: #333;
+       padding: 10px;
+     }
+
+     nav ul {
+       list-style-type: none;
+       margin: 0;
+       padding: 0;
+       display: flex;
+     }
+
+     nav ul li {
+       margin-right: 10px;
+     }
+
+     nav ul li a {
+       color: #fff;
+       text-decoration: none;
+       padding: 5px 10px;
+     }
+
+     main {
+       margin: 20px;
+     }
+
+     h1 {
+       margin-bottom: 20px;
+     }
+
+     p {
+       margin-bottom: 10px;
+     }
+
+     ul {
+       margin-bottom: 10px;
+       padding-left: 20px;
+     }
+
+     a {
+       display: inline-block;
+       padding: 5px 10px;
+       background-color: #333;
+       color: #fff;
+       text-decoration: none;
+       border-radius: 3px;
+     }
+
+     .feedback-form {
+       margin-top: 20px;
+     }
+
+     footer {
+       background-color: #333;
+       color: #fff;
+       padding: 20px;
+       text-align: center;
+       margin-top: 50px;
+     }
+  </style>
+</head>
+<body>
+   <header>
+     <nav>
+       <ul>
+         <li><a href="/">Home</a></li>
+         <li><a href="/book-ticket/">Book Ticket</a></li>
+         <li><a href="/search_tickets/">Search Ticket</a></li>
+         <li><a href="/feedback-list/">Submit Feedback</a></li>
+         <li><a href="/cancel-ticket/">Cancel Ticket</a></li>
+         <li><a href="http://localhost:8000/admin/login/?next=/admin/">Admin Area</a></li>
+         
+       </ul>
+     </nav>
+   </header>
+
+  <main>
+    {% block content %}
+    {% endblock %}
+  </main>
+
+  <footer>
+    <p>&copy; 2023 Matheus Flight Project</p>
+  </footer>
+</body>
+</html>

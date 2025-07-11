@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  <title>Cancel Ticket</title>
+{% endblock %}
+
+{% block content %}
+  <h1>Cancel Ticket</h1>
+  {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  <form action="{% url 'cancel_ticket' %}" method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="ticket_code">Ticket Code</label>
+      <input type="text" name="ticket_code" id="ticket_code" class="form-control">
+    </div>
+    <button type="submit" class="btn btn-primary">Cancel Ticket</button>
+  </form>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  <title>Reply Feedback</title>
+{% endblock %}
+{% block content %}
+  <h1>Reply to Feedback</h1>
+{% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+  <form method="post" action="{% url 'reply_feedback' feedback.id %}">
+  {% csrf_token %}
+  <div class="form-group">
+    <label for="reply">Reply:</label>
+    <textarea class="form-control" id="reply" name="reply" rows="4"></textarea>
+  </div>
+  <button type="submit" class="btn btn-primary">Submit Reply</button>
+</form>
+  {% block messages %}
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endblock %}
+{% endblock %}

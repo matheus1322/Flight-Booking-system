@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  <title>Feedback List</title>
+{% endblock %}
+
+{% block content %}
+  <h1>Feedback List</h1>
+  {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Feedback</th>
+        <th>Reply</th>
+        {% if user.is_superuser %}
+          <th>Actions</th>
+        {% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for feedback in feedbacks %}
+        <tr>
+          <td>{{ feedback.name }}</td>
+          <td>{{ feedback.feedback }}</td>
+          <td>
+            {% if feedback.reply %}
+              {{ feedback.reply.content }}
+            {% else %}
+              No reply yet.
+            {% endif %}
+          </td>
+          {% if user.is_superuser %}
+            <td>
+              <a href="{% url 'reply_feedback' feedback.id %}">Reply</a>
+              <a href="{% url 'edit_feedback' feedback.id %}">Edit</a>
+              <a href="{% url 'delete_feedback' feedback.id %}">Delete</a>
+            </td>
+          {% endif %}
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="{% if user.is_superuser %}4{% else %}3{% endif %}">No feedbacks found.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

@@ -1,0 +1,8 @@
+Ticket Code  Username  Economy Tickets  First Class Tickets  Premium Economy Tickets  Number of Tickets Total Price
+     4A7IBT   MATHEUS               12                    1                        4                 17     1839.99
+     ILJY4W    renata                2                    4                        5                 11     1919.99
+     O5GANX  jhon doe                1                    0                        0                  1      100.00
+     ONGW66  jane doe                0                    1                        4                  5      879.99
+     H5R1C4 Clay More                7                    4                        1                 12     1679.99
+     R6WPFE       wal                3                    0                        0                  3      300.00
+     VD3FM2       wal                2                    3                        1                  6     1039.99

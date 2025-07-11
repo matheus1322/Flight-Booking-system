@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Ticket Details</h1>
+<p>Congratulations on your booking!</p>
+<p>Here are your details:</p>
+
+<table>
+  <tr>
+    <th>Username</th>
+    <td>{{ booking.username }}</td>
+  </tr>
+  <tr>
+
+  <tr>
+    <th>Economy Tickets</th>
+    <td>{{ booking.number_of_tickets_economy }}</td>
+  </tr>
+
+  <tr>
+    <th>First Class Tickets</th>
+    <td>{{ booking.number_of_tickets_first_class }}</td>
+  </tr>
+  <tr>
+  <tr>
+    <th>Premium Economy Tickets</th>
+    <td>{{ booking.number_of_tickets_premium_economy }}</td>
+  </tr>
+  <tr>
+    <th>Total Price</th>
+    <td>{{ booking.total_price }}</td>
+  </tr>
+  <tr>
+    <th>Ticket Code</th>
+    <td>{{ booking.ticket_code }}</td>
+  </tr>
+</table>
+
+<a href="{% url 'home' %}">Back to Home</a>
+
+{% endblock %}

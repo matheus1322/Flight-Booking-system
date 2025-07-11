@@ -1,0 +1,10 @@
+{% extends "book_ticket.html" %}
+
+{% block content %}
+  <h1>Booking Confirmation</h1>
+  <p>Username: {{ booking.user.username }}</p>
+  <p>Ticket Type: {{ booking.ticket.ticket_type }}</p>
+  <p>Number of Tickets: {{ booking.number_of_tickets }}</p>
+  <p>Total Price: £{{ booking.total_price }}</p>
+  <p>Ticket Code: {{ booking.id }}</p>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'book_tickets.html' %}
+
+{% block content %}
+  <h1>Available Tickets</h1>
+  {% if tickets %}
+    <ul>
+      {% for ticket in tickets %}
+        <li>{{ ticket.ticket_type }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No tickets available.</p>
+  {% endif %}
+{% endblock %}

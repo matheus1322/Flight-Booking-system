@@ -1,0 +1,270 @@
+This pseudocode is a explanation abot my Flight Booking System.
+With this you will be able to understand how I made my program and how it's work.
+
+FUNCTION home request
+RETURN render request, 'flight_booking/home.html'
+END FUNCTION
+
+FUNCTION book_ticket request
+tickets = Ticket.objects.all
+form = TicketBookingForm request.POST or None
+
+IF request.method == 'POST' THEN
+IF form.is_valid THEN
+num_tickets_economy = form.cleaned_data'number_of_tickets_economy'
+num_tickets_first_class = form.cleaned_data'number_of_tickets_first_class'
+num_tickets_premium_economy = form.cleaned_data'number_of_tickets_premium_economy'
+
+TRY
+ticket_economy = tickets.get ticket_type='economy' 
+ticket_first_class = tickets.get ticket_type='first_class'
+ticket_premium_economy = tickets.get ticket_type='premium_economy'
+
+num_tickets_total = num_tickets_economy + num_tickets_first_class + num_tickets_premium_economy
+
+IF ticket_economy.availability >= num_tickets_economy AND ticket_first_class.availability >= num_tickets_first_class AND ticket_premium_economy.availability >= num_tickets_premium_economy THEN
+total_price_economy = ticket_economy.price * num_tickets_economy
+total_price_first_class = ticket_first_class.price * num_tickets_first_class
+total_price_premium_economy = ticket_premium_economy.price * num_tickets_premium_economy
+
+total_price = total_price_economy + total_price_first_class + total_price_premium_economy
+
+discounted_price = apply_discount num_tickets_total, total_price
+
+ticket_economy.availability -= num_tickets_economy
+ticket_first_class.availability -= num_tickets_first_class
+ticket_premium_economy.availability -= num_tickets_premium_economy
+
+ticket_economy.save
+ticket_first_class.save
+ticket_premium_economy.save
+
+booking = Booking.objects.create
+username=request.POST 'username'
+ticket=ticket_economy
+number_of_tickets=num_tickets_total
+total_price=discounted_price
+ticket_code=generate_ticket_code
+
+booking.save
+
+RETURN redirect 'ticket_details', booking_id=booking.id
+ELSE
+messages.error request, 'Insufficient ticket availability.'
+END IF
+EXCEPT Ticket.DoesNotExist
+messages.error request, 'Tickets not available.' 
+END TRY
+END IF
+END IF
+
+context = 
+'tickets': tickets,
+'form': form
+    
+
+RETURN render request, 'book_ticket.html', context
+END FUNCTION
+
+FUNCTION apply_discount in num_tickets, total_price
+IF num_tickets >= 5 THEN
+discount = Decimal(0.2)
+discount_amount = total_price * discount
+discounted_price = total_price - discount_amount
+
+RETURN discounted_price.quantize Decimal '0.00', rounding=ROUND_DOWN
+END IF
+
+RETURN total_price
+END FUNCTION
+
+FUNCTION generate_ticket_code
+characters = string.ascii_uppercase + string.digits
+ticket_code = ''.join random.choices characters, k=6
+
+WHILE Booking.objects.filter ticket_code=ticket_code.exists DO
+ticket_code = ''.join random.choices characters, k=6
+END WHILE
+
+RETURN ticket_code
+END FUNCTION
+
+FUNCTION available_tickets request
+tickets = Ticket.objects.all
+RETURN render request, 'available_tickets.html', 'tickets': tickets
+END FUNCTION
+
+FUNCTION ticket_details request, booking_id 
+TRY
+booking = Booking.objects.get id=booking_id 
+context =  'booking': booking 
+RETURN render request, 'ticket_details.html', context
+EXCEPT Booking.DoesNotExist
+RETURN render request, 'ticket_not_found.html'
+END TRY
+END FUNCTION
+
+FUNCTION cancel_ticket request
+IF request.method == 'POST' THEN
+ticket_code = request.POST.get 'ticket_code'
+TRY
+booking = Booking.objects.get ticket_code=ticket_code
+ticket = booking.ticket
+
+ticket.availability += booking.number_of_tickets
+ticket.save
+
+booking.delete
+
+messages.success request, 'Your ticket has been cancelled successfully!'
+RETURN redirect 'home'
+EXCEPT Booking.DoesNotExist
+messages.error request, 'Invalid ticket code.'
+END TRY
+END IF
+RETURN render request, 'cancel_ticket.html'
+END FUNCTION
+
+FUNCTION search_tickets request
+ticket_code = request.GET.get 'ticket_code'
+bookings = None
+
+IF ticket_code THEN
+bookings = Booking.objects.filter ticket_code=ticket_code
+END IF
+
+RETURN render request, 'search_tickets.html', 'bookings': bookings
+END FUNCTION
+
+FUNCTION submit_feedback request
+IF request.method == 'POST' THEN
+name = request.POST.get'name'
+feedback = request.POST.get'feedback'
+Feedback.objects.create name=name, feedback=feedback
+RETURN redirect'feedback_list'
+ELSE
+form = FeedbackSubmissionForm
+END IF
+
+RETURN render request, 'submit_feedback.html', 'form': form
+END FUNCTION
+
+FUNCTION feedback_list request
+feedbacks = Feedback.objects.all
+context ='feedbacks': feedbacks
+RETURN render request, 'feedback_list.html', context
+END FUNCTION
+
+FUNCTION edit_feedback request, feedback_id
+feedback = get_object_or_404 Feedback, id=feedback_id
+
+IF request.method == 'POST' THEN
+form = FeedbackForm request.POST, instance=feedback
+IF form.is_valid THEN
+form.save
+RETURN redirect'feedback_list'
+END IF
+ELSE
+form = FeedbackForm instance=feedback
+END IF
+
+context ='feedback': feedback, 'form': form
+RETURN render request, 'edit_feedback.html', context
+END FUNCTION
+
+FUNCTION reply_feedback request, feedback_id
+feedback = get_object_or_404 Feedback, id=feedback_id
+
+IF request.method == 'POST' THEN
+form = ReplyForm request.POST
+IF form.is_valid THEN
+reply_content = form.cleaned_data'reply'
+reply = Reply.objects.create content=reply_content
+feedback.reply = reply
+feedback.save
+RETURN redirect 'feedback_list'
+END IF
+ELSE
+form = ReplyForm
+END IF
+
+context = 'feedback': feedback, 'form': form
+RETURN render request, 'reply_feedback.html', context
+END FUNCTION
+
+FUNCTION delete_feedback request, feedback_id
+feedback = get_object_or_404 Feedback, id=feedback_id
+
+IF request.method == 'POST' THEN
+feedback.delete
+RETURN redirect 'feedback_list'
+END IF
+
+context = 'feedback': feedback
+RETURN render request, 'delete_feedback.html', context
+END FUNCTION
+
+FUNCTION export_reports request
+response = HttpResponse content_type='text/csv'
+response 'Content-Disposition' = 'attachment; filename="bookings.csv"'
+
+writer = csv.writer response
+writer.writerow 'Ticket Code', 'Username', 'Ticket Type', 'Number of Tickets', 'Total Price'
+bookings = Booking.objects.all
+
+FOR EACH booking IN bookings DO
+writer.writerow
+booking.ticket_code
+booking.username
+booking.ticket.ticket_type
+booking.number_of_tickets
+booking.total_price
+       
+END FOR
+
+RETURN response
+END FUNCTION
+
+FUNCTION submit_reply request, feedback_id
+IF request.method == 'POST' THEN
+feedback = get_object_or_404 Feedback, id=feedback_id
+reply = request.POST.get 'reply' 
+
+feedback.reply = reply
+feedback.save
+
+RETURN redirect 'feedback_list'
+END IF
+END FUNCTION
+
+FUNCTION show_reply request, reply_id
+reply = Reply.objects.get id=reply_id
+message = str reply.message
+context = 
+'reply': reply
+'message': message
+    
+RETURN render request, 'reply.html', context
+END FUNCTION
+
+FUNCTION submit_edit request, feedback_id
+IF request.method == 'POST' THEN
+feedback = get_object_or_404 Feedback, id=feedback_id
+edited_feedback = request.POST.get 'edited_feedback'
+
+feedback.feedback = edited_feedback
+feedback.save
+
+RETURN redirect 'feedback_list'
+END IF
+END FUNCTION
+
+FUNCTION submit_delete request, feedback_id
+IF request.method == 'POST' THEN
+feedback = get_object_or_404 Feedback, id=feedback_id
+
+feedback.delete
+
+RETURN redirect 'feedback_list'
+END IF
+END FUNCTION

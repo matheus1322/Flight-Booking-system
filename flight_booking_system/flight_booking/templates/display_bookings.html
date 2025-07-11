@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  <title>All Bookings</title>
+{% endblock %}
+
+{% block content %}
+  <h1>All Bookings</h1>
+
+  {% if bookings %}
+    <table>
+      <thead>
+        <tr>
+          <th>Ticket Code</th>
+          <th>Username</th>
+          <th>Economy Tickets</th>
+          <th>First Class Tickets</th>
+          <th>Premium Economy Tickets</th>
+          <th>Total Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for booking in bookings %}
+          <tr>
+            <td>{{ booking.ticket_code }}</td>
+            <td>{{ booking.username }}</td>
+            <td>{{ booking.number_of_tickets_economy }}</td>
+            <td>{{ booking.number_of_tickets_first_class }}</td>
+            <td>{{ booking.number_of_tickets_premium_economy }}</td>
+            <td>{{ booking.total_price }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No bookings found.</p>
+  {% endif %}
+{% endblock %}
